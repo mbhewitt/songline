@@ -1,0 +1,588 @@
+{
+ "format": "sing-app/1",
+ "title": "Amazing Grace (demo)",
+ "artist": "Traditional",
+ "key": "G",
+ "tempo": 84.0,
+ "totalBeats": 48.0,
+ "bars": [
+  {
+   "n": 1,
+   "pass": 1,
+   "t": 0.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 0.0,
+     "name": "G"
+    }
+   ]
+  },
+  {
+   "n": 2,
+   "pass": 1,
+   "t": 3.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 3.0,
+     "name": "G"
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "pass": 1,
+   "t": 6.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 6.0,
+     "name": "G"
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "pass": 1,
+   "t": 9.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 9.0,
+     "name": "C"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "pass": 1,
+   "t": 12.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 12.0,
+     "name": "G"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "pass": 1,
+   "t": 15.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 15.0,
+     "name": "G"
+    }
+   ]
+  },
+  {
+   "n": 7,
+   "pass": 1,
+   "t": 18.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 18.0,
+     "name": "G"
+    }
+   ]
+  },
+  {
+   "n": 8,
+   "pass": 1,
+   "t": 21.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 21.0,
+     "name": "D"
+    }
+   ]
+  },
+  {
+   "n": 9,
+   "pass": 1,
+   "t": 24.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 24.0,
+     "name": "D"
+    }
+   ]
+  },
+  {
+   "n": 10,
+   "pass": 1,
+   "t": 27.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 27.0,
+     "name": "G"
+    }
+   ]
+  },
+  {
+   "n": 11,
+   "pass": 1,
+   "t": 30.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 30.0,
+     "name": "G"
+    }
+   ]
+  },
+  {
+   "n": 12,
+   "pass": 1,
+   "t": 33.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 33.0,
+     "name": "Em"
+    }
+   ]
+  },
+  {
+   "n": 13,
+   "pass": 1,
+   "t": 36.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 36.0,
+     "name": "G"
+    }
+   ]
+  },
+  {
+   "n": 14,
+   "pass": 1,
+   "t": 39.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 39.0,
+     "name": "G"
+    }
+   ]
+  },
+  {
+   "n": 15,
+   "pass": 1,
+   "t": 42.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 42.0,
+     "name": "D"
+    }
+   ]
+  },
+  {
+   "n": 16,
+   "pass": 1,
+   "t": 45.0,
+   "beats": 3.0,
+   "ts": [
+    3,
+    4
+   ],
+   "chords": [
+    {
+     "t": 45.0,
+     "name": "G"
+    }
+   ]
+  }
+ ],
+ "notes": [
+  {
+   "t": 2.0,
+   "dur": 1.0,
+   "midi": 62,
+   "lyric": "A",
+   "hyphen": true,
+   "melisma": false,
+   "bar": 1,
+   "pass": 1
+  },
+  {
+   "t": 3.0,
+   "dur": 2.0,
+   "midi": 67,
+   "lyric": "maz",
+   "hyphen": true,
+   "melisma": false,
+   "bar": 2,
+   "pass": 1
+  },
+  {
+   "t": 5.0,
+   "dur": 0.5,
+   "midi": 71,
+   "lyric": "ing",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 2,
+   "pass": 1
+  },
+  {
+   "t": 5.5,
+   "dur": 0.5,
+   "midi": 67,
+   "lyric": "",
+   "hyphen": false,
+   "melisma": true,
+   "bar": 2,
+   "pass": 1
+  },
+  {
+   "t": 6.0,
+   "dur": 2.0,
+   "midi": 71,
+   "lyric": "grace",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 3,
+   "pass": 1
+  },
+  {
+   "t": 8.0,
+   "dur": 1.0,
+   "midi": 69,
+   "lyric": "how",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 3,
+   "pass": 1
+  },
+  {
+   "t": 9.0,
+   "dur": 2.0,
+   "midi": 67,
+   "lyric": "sweet",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 4,
+   "pass": 1
+  },
+  {
+   "t": 11.0,
+   "dur": 1.0,
+   "midi": 64,
+   "lyric": "the",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 4,
+   "pass": 1
+  },
+  {
+   "t": 12.0,
+   "dur": 2.0,
+   "midi": 62,
+   "lyric": "sound",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 5,
+   "pass": 1
+  },
+  {
+   "t": 14.0,
+   "dur": 1.0,
+   "midi": 62,
+   "lyric": "that",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 5,
+   "pass": 1
+  },
+  {
+   "t": 15.0,
+   "dur": 2.0,
+   "midi": 67,
+   "lyric": "saved",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 6,
+   "pass": 1
+  },
+  {
+   "t": 17.0,
+   "dur": 0.5,
+   "midi": 71,
+   "lyric": "a",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 6,
+   "pass": 1
+  },
+  {
+   "t": 17.5,
+   "dur": 0.5,
+   "midi": 67,
+   "lyric": "",
+   "hyphen": false,
+   "melisma": true,
+   "bar": 6,
+   "pass": 1
+  },
+  {
+   "t": 18.0,
+   "dur": 2.0,
+   "midi": 71,
+   "lyric": "wretch",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 7,
+   "pass": 1
+  },
+  {
+   "t": 20.0,
+   "dur": 1.0,
+   "midi": 69,
+   "lyric": "like",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 7,
+   "pass": 1
+  },
+  {
+   "t": 21.0,
+   "dur": 5.0,
+   "midi": 74,
+   "lyric": "me",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 8,
+   "pass": 1
+  },
+  {
+   "t": 26.0,
+   "dur": 1.0,
+   "midi": 71,
+   "lyric": "I",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 9,
+   "pass": 1
+  },
+  {
+   "t": 27.0,
+   "dur": 2.0,
+   "midi": 74,
+   "lyric": "once",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 10,
+   "pass": 1
+  },
+  {
+   "t": 29.0,
+   "dur": 0.5,
+   "midi": 71,
+   "lyric": "was",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 10,
+   "pass": 1
+  },
+  {
+   "t": 29.5,
+   "dur": 0.5,
+   "midi": 67,
+   "lyric": "",
+   "hyphen": false,
+   "melisma": true,
+   "bar": 10,
+   "pass": 1
+  },
+  {
+   "t": 30.0,
+   "dur": 2.0,
+   "midi": 71,
+   "lyric": "lost",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 11,
+   "pass": 1
+  },
+  {
+   "t": 32.0,
+   "dur": 1.0,
+   "midi": 69,
+   "lyric": "but",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 11,
+   "pass": 1
+  },
+  {
+   "t": 33.0,
+   "dur": 2.0,
+   "midi": 67,
+   "lyric": "now",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 12,
+   "pass": 1
+  },
+  {
+   "t": 35.0,
+   "dur": 1.0,
+   "midi": 64,
+   "lyric": "am",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 12,
+   "pass": 1
+  },
+  {
+   "t": 36.0,
+   "dur": 2.0,
+   "midi": 62,
+   "lyric": "found",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 13,
+   "pass": 1
+  },
+  {
+   "t": 38.0,
+   "dur": 1.0,
+   "midi": 62,
+   "lyric": "was",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 13,
+   "pass": 1
+  },
+  {
+   "t": 39.0,
+   "dur": 2.0,
+   "midi": 67,
+   "lyric": "blind",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 14,
+   "pass": 1
+  },
+  {
+   "t": 41.0,
+   "dur": 0.5,
+   "midi": 71,
+   "lyric": "but",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 14,
+   "pass": 1
+  },
+  {
+   "t": 41.5,
+   "dur": 0.5,
+   "midi": 67,
+   "lyric": "",
+   "hyphen": false,
+   "melisma": true,
+   "bar": 14,
+   "pass": 1
+  },
+  {
+   "t": 42.0,
+   "dur": 2.0,
+   "midi": 71,
+   "lyric": "now",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 15,
+   "pass": 1
+  },
+  {
+   "t": 44.0,
+   "dur": 1.0,
+   "midi": 69,
+   "lyric": "I",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 15,
+   "pass": 1
+  },
+  {
+   "t": 45.0,
+   "dur": 3.0,
+   "midi": 67,
+   "lyric": "see",
+   "hyphen": false,
+   "melisma": false,
+   "bar": 16,
+   "pass": 1
+  }
+ ]
+}

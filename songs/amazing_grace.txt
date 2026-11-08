@@ -1,0 +1,24 @@
+# Amazing Grace — tune "New Britain" (1829), words John Newton (1779). Public domain.
+# Simplified common melody, used as the app's built-in demo.
+title: Amazing Grace (demo)
+artist: Traditional
+key: G
+tempo: 84
+time: 3/4
+
+1  G   | r:2 D4:1:A-
+2  G   | G4:2:maz- B4:.5:ing G4:.5:_
+3  G   | B4:2:grace A4:1:how
+4  C   | G4:2:sweet E4:1:the
+5  G   | D4:2:sound D4:1:that
+6  G   | G4:2:saved B4:.5:a G4:.5:_
+7  G   | B4:2:wretch A4:1:like
+8  D   | D5~:3:me
+9  D   | D5:2:_ B4:1:I
+10 G   | D5:2:once B4:.5:was G4:.5:_
+11 G   | B4:2:lost A4:1:but
+12 Em  | G4:2:now E4:1:am
+13 G   | D4:2:found D4:1:was
+14 G   | G4:2:blind B4:.5:but G4:.5:_
+15 D   | B4:2:now A4:1:I
+16 G   | G4:3:see

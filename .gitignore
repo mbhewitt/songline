@@ -1,0 +1,15 @@
+# Your own songs and certificates: never commit these
+my-songs/
+certs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp

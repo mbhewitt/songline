@@ -1,0 +1,20 @@
+# Twinkle, Twinkle, Little Star — melody "Ah! vous dirai-je, maman" (France, 1761),
+# words Jane Taylor (1806). Public domain. A small example of the song format.
+title: Twinkle, Twinkle, Little Star
+artist: Traditional
+key: C
+tempo: 100
+time: 4/4
+
+1  C     | C4:1:Twin- C4:1:kle G4:1:twin- G4:1:kle
+2  F C   | A4:1:lit- A4:1:tle G4:2:star,
+3  F C   | F4:1:how F4:1:I E4:1:won- E4:1:der
+4  G C   | D4:1:what D4:1:you C4:2:are.
+5  C F   | G4:1:Up G4:1:a- F4:1:bove F4:1:the
+6  C G   | E4:1:world E4:1:so D4:2:high,
+7  C F   | G4:1:like G4:1:a F4:1:dia- F4:1:mond
+8  C G   | E4:1:in E4:1:the D4:2:sky.
+9  C     | C4:1:Twin- C4:1:kle G4:1:twin- G4:1:kle
+10 F C   | A4:1:lit- A4:1:tle G4:2:star,
+11 F C   | F4:1:how F4:1:I E4:1:won- E4:1:der
+12 G C   | D4:1:what D4:1:you C4:2:are.
