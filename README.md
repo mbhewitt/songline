@@ -71,7 +71,7 @@ If you have `make`, the same commands are available as `make run` and `make test
 | **Mic** | Show your sung pitch and score each note. Headphones help, because the guide piano can leak into the mic. |
 | **Staff / Piano roll** | Switch views. |
 | **Tempo** | Slow down or speed up. This is remembered per song. |
-| **Key shift**, **Fit** | Move the song into your range. The line under the slider shows the song's range and whether it fits yours. |
+| **Key shift**, **Fit**, **Measure** | Move the song into your range, or measure your range with the mic. The line under the slider shows the song's range and whether it fits yours. |
 | **More → Guide piano, Chords** | Volumes. Set the guide piano to *off* once you know the tune. |
 | **More → My range** | A voice type (Bass … Soprano), your lowest and highest notes, or **Measure** to find them with the mic. Notes outside your range are shaded red on the piano roll. |
 | **More → Click, Count-in, Any octave** | Metronome; count-in before playing; octave-free scoring. |
@@ -81,7 +81,7 @@ If you have `make`, the same commands are available as `make run` and `make test
 
 ### Measuring your range
 
-**More → My range → Measure** opens a short two-step check:
+**Measure** (next to **Fit**, and also under **More → My range**) opens a short two-step check:
 
 1. Sing your lowest comfortable note on "ah" and hold it for a second or two.
 2. Sing your highest comfortable note (not a strained one) and hold it.

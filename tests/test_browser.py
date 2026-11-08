@@ -95,7 +95,7 @@ class Browser(unittest.TestCase):
     def test_measure_range_with_fake_mic(self):
         page = self.open()
         page.click("#moreBtn")
-        page.click("#measureBtn")
+        page.click("#measureBtn2")
         page.wait_for_function("() => M && M.segs.includes(45)", timeout=10000)    # heard a steady A2
         page.click("#mNext")
         page.wait_for_function("() => M && M.segs.includes(64)", timeout=10000)    # heard a steady E4

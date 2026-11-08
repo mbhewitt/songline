@@ -879,6 +879,7 @@ function setup() {
   }
   syncVoice();
   $('measureBtn').onclick = startMeasure;
+  $('measureBtn2').onclick = startMeasure;
   $('mNext').onclick = nextMeasure;
   $('mCancel').onclick = endMeasure;
   bindToggle('clickBtn', 'click'); bindToggle('countBtn', 'countIn'); bindToggle('octBtn', 'anyOct');
