@@ -6,6 +6,10 @@ All notable changes to this project are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Example copy on GitHub Pages (`tools/build_site.py`, `pages.yml`); the build only publishes
+  songs marked public domain.
+
 ## [1.0.0] - 2026-11-08
 
 First public release.

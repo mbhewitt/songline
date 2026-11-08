@@ -9,6 +9,10 @@ you're singing over the melody and tells you how close you were.
 It runs in any modern browser, on a computer or a phone. You can install it to
 your home screen, and once a song is on your device it works offline.
 
+**Try it: <https://mbhewitt.github.io/songline/>.** This is an example copy
+with the bundled public-domain songs. Open it on your phone and tap **Install**
+(or the browser menu's *Add to Home screen*) to install it like an app.
+
 <p>
   <img src="docs/screenshots/roll-desktop-light.png" alt="Piano roll view: notes as bars with lyrics under them, a blue line showing the sung pitch, and the current word highlighted in the karaoke line" width="100%">
 </p>
@@ -141,10 +145,15 @@ read your songs.
 
 ### Without a server
 
-The `app/` folder is a static website. You can host it on any https static host
-and load song `.json` files on the device with **Songs → Load song file…**. To
-make a `.json` file, see [Adding your own songs](#adding-your-own-songs). The
-song list from the server won't be there, but everything else works. Only
+The `app/` folder is a static website. The [example copy](https://mbhewitt.github.io/songline/)
+is built by `tools/build_site.py` and published by `.github/workflows/pages.yml`
+on every push to `main`; a fork can do the same by enabling GitHub Pages
+(Settings → Pages → Source: GitHub Actions). Only `songs/` is published, and the
+build refuses any song whose header doesn't say it's in the public domain.
+
+On a hosted copy, load your own song `.json` files on the device with
+**Songs → Load song file…**. They're stored in that browser only, never uploaded. To
+make a `.json` file, see [Adding your own songs](#adding-your-own-songs). Only
 publish songs you have the right to share.
 
 ## Adding your own songs
@@ -215,6 +224,7 @@ tools/
   txt2song.py        song text format → song JSON (also used by serve.py)
   txt2abc.py         song text format → ABC notation, for proof-reading
   make_cert.sh       private CA + https certificate for phones
+  build_site.py      static copy of the app + bundled songs (GitHub Pages)
   screenshots.py     regenerates the screenshots in this README
 tests/               unit tests (Python) and browser tests (Playwright, optional)
 docs/                song format guide and screenshots

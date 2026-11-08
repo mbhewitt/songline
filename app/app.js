@@ -772,7 +772,7 @@ async function showLibrary() {
   // songs offered by the home server this page came from (if any)
   try {
     const r = await fetch('songs/index.json', { cache: 'no-store' });
-    if (r.ok) for (const it of await r.json()) if (!saved.some(s => s.id === slug(it.title)) && !(demo && it.title === demo.title)) add(it.title, 'from your server · tap to keep on this device', async () => {
+    if (r.ok) for (const it of await r.json()) if (!saved.some(s => s.id === slug(it.title)) && !(demo && it.title === demo.title)) add(it.title, 'tap to keep on this device', async () => {
       try { const sr = await fetch('songs/' + encodeURIComponent(it.file), { cache: 'no-store' });
         if (!sr.ok) throw new Error(`HTTP ${sr.status}`); await keepSong(await sr.json()); closeLibrary(); }
       catch (e) { toast(`Couldn't fetch ${it.title}: ${e.message}`); }
