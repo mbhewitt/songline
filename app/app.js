@@ -329,15 +329,15 @@ function openSong(song, id) {
 
 /* ------------------------------------------------------------------- mic */
 let micStream = null, analyser = null, micBuf = null, frameN = 0;
-async function micOn() {
+async function micOn(report = toast) {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    toast('The microphone only works on a secure (https) page. Open Songline from its https address.'); return false;
+    report('The microphone only works on a secure (https) page. Open Songline from its https address.'); return false;
   }
   ensureAudio();
   try {
     micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: false, autoGainControl: false } });
   } catch (e) {
-    toast(e.name === 'NotAllowedError' ? 'Microphone permission was refused. Allow it in the browser’s site settings to see your pitch.'
+    report(e.name === 'NotAllowedError' ? 'Microphone permission was refused. Allow it in the browser’s site settings to see your pitch.'
                                        : `Couldn't open the microphone (${e.message}).`); return false;
   }
   const src = ctx.createMediaStreamSource(micStream);
@@ -367,11 +367,18 @@ let M = null;                       // { step: 'low'|'high'|'done', segs: [], cu
 const STEADY_FRAMES = 12, STEADY_SPREAD = 0.5;
 const median = a => { const b = a.slice().sort((x, y) => x - y); return b[b.length >> 1]; };
 async function startMeasure() {
+  if (M) return;
   pause();
-  const micWasOn = !!micStream;
-  if (!micWasOn && !(await micOn())) return;
-  M = { step: 'low', segs: [], cur: [], micWasOn };
-  $('measure').hidden = false; showMeasure();
+  // Open the sheet first, so a slow or failed microphone start is visible rather than silent.
+  M = { step: 'starting', segs: [], cur: [], micWasOn: !!micStream };
+  $('measure').hidden = false; $('mNote').textContent = '–'; $('mNext').disabled = true;
+  $('mText').textContent = 'Starting the microphone… If the browser asks, allow it.';
+  const fail = msg => { if (M) { M.step = 'failed'; $('mText').textContent = msg; } };
+  try {
+    if (!M.micWasOn && !(await micOn(fail))) return;
+  } catch (e) { fail(`Couldn't start measuring (${e.message}).`); return; }
+  if (!M) { if (micStream) micOff(); return; }     // cancelled while the mic was starting
+  M.step = 'low'; showMeasure();
 }
 function showMeasure() {
   const t = $('mText'), next = $('mNext');
@@ -382,7 +389,7 @@ function showMeasure() {
   $('mNote').textContent = M.step === 'done' ? `${plainName(M.low)}–${plainName(M.high)}` : '–';
 }
 function measureFrame() {
-  if (!analyser || (frameN++ & 1) || M.step === 'done') return;
+  if (!analyser || (frameN++ & 1) || (M.step !== 'low' && M.step !== 'high')) return;
   analyser.getFloatTimeDomainData(micBuf);
   const m = detectPitch(micBuf, ctx.sampleRate);
   if (m == null) { M.cur = []; return; }
