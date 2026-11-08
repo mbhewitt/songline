@@ -7,12 +7,16 @@ All notable changes to this project are listed here. The format follows
 ## [Unreleased]
 
 ### Added
+- Range coaching after **Measure**: range width, nearest voice type, and the key shift that
+  fits each song on the device.
 - Example copy on GitHub Pages (`tools/build_site.py`, `pages.yml`); the build only publishes
   songs marked public domain.
 
 ### Changed
 - A **Measure** button now sits next to **Fit** on the main bar, so the range finder is easy to
   find. It is still also under **More → My range**.
+- **Measure** opens its panel at once and shows microphone errors there, instead of failing
+  silently.
 
 ## [1.0.0] - 2026-11-08
 

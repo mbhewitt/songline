@@ -101,9 +101,15 @@ class Browser(unittest.TestCase):
         page.wait_for_function("() => M && M.segs.includes(64)", timeout=10000)    # heard a steady E4
         page.click("#mNext")
         self.assertEqual(page.inner_text("#mNote"), "A2–E4")
+        page.wait_for_selector("#mCoach li")
+        coach = page.inner_text("#mCoach")
+        self.assertIn("19 semitones", coach)
+        self.assertIn("closest to Baritone", coach)
+        self.assertIn("Amazing Grace", coach)
         page.click("#mNext")
         self.assertEqual(page.evaluate("[S.myLo, S.myHi]"), [45, 64])
         self.assertTrue(page.is_hidden("#measure"))
+        self.assertTrue(page.is_hidden("#mCoach"))
         self.assertFalse(page.evaluate("!!micStream"), "mic left on after measuring")
 
 

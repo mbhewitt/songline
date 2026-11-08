@@ -246,8 +246,8 @@ function prepare() {
   $('tempoOut').textContent = Math.round(bpm()) + ' bpm';
 }
 // Song range under the key slider, judged against the singer's comfortable range.
-function songRange(shift) {
-  const ms = S.song.notes.map(n => n.midi + shift);
+function songRange(shift, song = S.song) {
+  const ms = song.notes.map(n => n.midi + shift);
   return [Math.min(...ms), Math.max(...ms)];
 }
 function noteName(m) { return spell(m, S.key).label; }
@@ -263,18 +263,19 @@ function showRange() {
   el.textContent = `Range ${noteName(lo)}–${noteName(hi)} · ${fit}`;
   el.className = 'range ' + cls;
 }
-// Key shift that best fits the song in the singer's range (fewest semitones out, then best centred).
-function fitShift() {
+// Key shift that best fits a song in a singer's range (fewest semitones out, then best centred).
+function fitFor(song, myLo, myHi) {
   let best = null;
   for (let sh = -24; sh <= 12; sh++) {
-    const [lo, hi] = songRange(sh);
-    const out = Math.max(0, S.myLo - lo) + Math.max(0, hi - S.myHi);
+    const [lo, hi] = songRange(sh, song);
+    const out = Math.max(0, myLo - lo) + Math.max(0, hi - myHi);
     // centred in the range, with a light preference for keys with fewer sharps/flats (easier staff)
-    const off = Math.abs((lo + hi) / 2 - (S.myLo + S.myHi) / 2) + 0.4 * Math.abs(makeKey(S.song.key, sh).fifths);
+    const off = Math.abs((lo + hi) / 2 - (myLo + myHi) / 2) + 0.4 * Math.abs(makeKey(song.key, sh).fifths);
     if (!best || out < best.out || (out === best.out && off < best.off)) best = { sh, out, off };
   }
-  return best.sh;
+  return best;
 }
+const fitShift = () => fitFor(S.song, S.myLo, S.myHi).sh;
 
 // Karaoke lines. Natural breaks first: rests, held notes, sentence ends, commas once the
 // line has some length. Then any line still too long for a phone is split near its middle
@@ -400,17 +401,50 @@ function measureFrame() {
   else if (M.cur.length === STEADY_FRAMES) { M.segs.push(Math.round(med)); $('mNext').disabled = false; }
   else if (M.cur.length > STEADY_FRAMES) M.segs[M.segs.length - 1] = Math.round(med);
 }
+// Coaching for a measured range: how wide it is, the nearest voice type, and how each song fits.
+// A range isn't good or bad on its own; what matters is which songs it suits, and in what key.
+function rangeCoach(lo, hi, songs) {
+  const w = hi - lo, tips = [];
+  const oct = Math.round(w / 6) / 2, span = `${w} semitones` + (w >= 12 ? `, about ${oct === 1 ? 'an octave' : oct + ' octaves'}` : '');
+  if (w < 12) tips.push(`Width: ${span}, under an octave. That's narrow, since most songs span 10 to 15 semitones. A warm-up often adds a few notes: hum and slide up and down for five minutes, then measure again.`);
+  else if (w < 18) tips.push(`Width: ${span}. That's typical for an untrained voice and enough for most hymns and simple songs.`);
+  else if (w < 24) tips.push(`Width: ${span}. A solid working range, enough for most pop and folk songs.`);
+  else tips.push(`Width: ${span}. A wide comfortable range: most songs will fit with a key shift.`);
+  // nearest by the middle of the range; the edges break ties
+  const v = VOICES.map(([name, a, b]) => ({ name, a, b, d: Math.abs(lo + hi - a - b) * 10 + Math.abs(lo - a) + Math.abs(hi - b) })).sort((x, y) => x.d - y.d)[0];
+  tips.push(`Voice type: closest to ${v.name} (typically ${plainName(v.a)}–${plainName(v.b)}).`
+    + (lo < v.a - 2 ? ' Your low end goes deeper than that.' : '') + (hi > v.b + 2 ? ' Your top goes higher than that.' : ''));
+  for (const song of songs) {
+    const [a, b] = songRange(0, song), f = fitFor(song, lo, hi), n = Math.abs(f.sh) - 12, dir = f.sh < 0 ? 'down' : 'up';
+    const sh = (f.sh > 0 ? '+' : '') + f.sh + (n < 0 ? '' : ` (an octave ${dir}${n ? `, then ${n} ${f.sh < 0 ? 'lower' : 'higher'}` : ''})`);
+    tips.push(`${song.title} (${plainName(a)}–${plainName(b)}): ` + (f.out === 0 && f.sh === 0 ? 'fits as written.'
+      : f.out === 0 ? `fits with Key shift ${sh}.`
+      : `spans ${b - a} semitones${b - a > w ? `, ${b - a - w} more than your range` : ''}. Best is Key shift ${sh}, which still goes `
+        + [lo > a + f.sh && `${lo - a - f.sh} below your bottom`, b + f.sh > hi && `${b + f.sh - hi} above your top`].filter(Boolean).join(' and ') + '.'));
+  }
+  tips.push('Comfortable, not maximum: if either end felt strained, measure again and stop a note short. Regular singing usually widens the range over a few weeks.');
+  return tips;
+}
+async function showCoach(lo, hi) {
+  const songs = (await dbAll()).map(r => r.song);
+  if (demo && !songs.some(s => s.title === demo.title)) songs.push(demo);
+  const ul = $('mCoach'); ul.innerHTML = '';
+  if (!M || M.step !== 'done') return;
+  for (const t of rangeCoach(lo, hi, songs)) { const li = document.createElement('li'); li.textContent = t; ul.append(li); }
+  ul.hidden = false;
+}
 function nextMeasure() {
   if (M.step === 'low') { M.low = Math.min(...M.segs); M.step = 'high'; M.segs = []; M.cur = []; }
   else if (M.step === 'high') {
     M.high = Math.max(...M.segs); M.step = 'done';
     if (M.high <= M.low) { toast(`The high note (${plainName(M.high)}) wasn't above the low one (${plainName(M.low)}). Let's try again.`); M.step = 'low'; M.segs = []; M.cur = []; }
+    else showCoach(M.low, M.high);
   } else { setMyRange(M.low, M.high); endMeasure(); return; }
   showMeasure();
 }
 function endMeasure() {
   if (M && !M.micWasOn) micOff();
-  M = null; $('measure').hidden = true;
+  M = null; $('measure').hidden = true; $('mCoach').hidden = true;
 }
 // McLeod pitch method (normalised square difference), 70–1100 Hz
 function detectPitch(buf, sr) {

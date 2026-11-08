@@ -89,6 +89,12 @@ If you have `make`, the same commands are available as `make run` and `make test
 Only notes you hold steady count, so slides and voice cracks are ignored. Then
 press **Use this range**.
 
+After the second note, Songline gives a short coaching readout: how wide your
+range is, the voice type it is closest to, and, for each song on the device,
+whether it fits as written, which **Key shift** makes it fit, or how far
+outside your range it still goes. A range isn't good or bad on its own; what
+matters is which songs it suits and in what key.
+
 ## Use it on your phone
 
 Your phone needs to reach the computer running `serve.py`. The page must also be
