@@ -7,6 +7,9 @@ All notable changes to this project are listed here. The format follows
 ## [Unreleased]
 
 ### Added
+- **Report**: a note-change report from the mic. It groups jumps by size and direction, shows
+  whether you land them, how fast, and whether you fall short, overshoot or slide in late, and
+  lists your hardest spots with a **Practise** button that loops the line.
 - Range coaching after **Measure**: range width, nearest voice type, and the key shift that
   fits each song on the device.
 - Example copy on GitHub Pages (`tools/build_site.py`, `pages.yml`); the build only publishes

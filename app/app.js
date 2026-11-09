@@ -366,7 +366,7 @@ function setMyRange(lo, hi) {
 // cracks and stray octave errors from the pitch detector don't set the range.
 let M = null;                       // { step: 'low'|'high'|'done', segs: [], cur: [], low, high, micWasOn }
 const STEADY_FRAMES = 12, STEADY_SPREAD = 0.5;
-const median = a => { const b = a.slice().sort((x, y) => x - y); return b[b.length >> 1]; };
+const median = a => { if (!a.length) return null; const b = a.slice().sort((x, y) => x - y); return b[b.length >> 1]; };
 async function startMeasure() {
   if (M) return;
   pause();
@@ -491,8 +491,13 @@ function micFrame(b) {
     S.trace.push({ b, m: shown });
     if (S.trace.length > 4000) S.trace.splice(0, 1000);
     if (k >= 0 && m != null) {
-      const st = S.stats.get(k) || { f: 0, h: 0 }; st.f++;
-      if (Math.abs((shown - target) * 100) <= 50) st.h++;
+      const st = S.stats.get(k) || { f: 0, h: 0, runs: [] }; st.f++;
+      const c = Math.round((shown - target) * 100), ms = (b - S.song.notes[k].t) * 60000 / bpm();
+      if (Math.abs(c) <= 50) st.h++;
+      // One run per pass through the note (loops repeat it): [ms since note start, cents off].
+      let run = st.runs[st.runs.length - 1];
+      if (!run || ms < run[run.length - 1][0]) { run = []; st.runs.push(run); if (st.runs.length > 30) st.runs.shift(); }
+      if (run.length < 300) run.push([ms, c]);
       S.stats.set(k, st);
     }
   }
@@ -508,7 +513,104 @@ function summary() {
   if (!S.stats.size) return;
   let f = 0, h = 0, notes = 0, good = 0;
   for (const st of S.stats.values()) if (st.f >= 3) { notes++; f += st.f; h += st.h; if (st.h / st.f >= 0.6) good++; }
-  if (notes) toast(`On pitch ${Math.round(100 * h / f)}% of the time · ${good} of ${notes} notes held within ±50 cents`, 7000);
+  if (notes) toast(`On pitch ${Math.round(100 * h / f)}% of the time · ${good} of ${notes} notes held within ±50 cents. Tap Report to see your jumps.`, 7000);
+}
+
+/* ------------------------------------------------------ transition report */
+const INTERVALS = ['unison', 'half step', 'whole step', 'minor 3rd', 'major 3rd', '4th', 'tritone', '5th', 'minor 6th', 'major 6th', 'minor 7th', 'major 7th', 'octave'];
+const intervalName = n => n <= 12 ? INTERVALS[n] : `octave + ${INTERVALS[n - 12]}`;
+// One pass through a note: when it first held within ±50 cents (two readings in a row), where it
+// settled, and where it started. Cents are signed; a negative `startDir` means it began on the side
+// of the note it came from (still on the old pitch, or short of the jump).
+function judgeRun(run, dir) {
+  let land = -1;
+  for (let j = 0; j + 1 < run.length; j++) if (Math.abs(run[j][1]) <= 50 && Math.abs(run[j + 1][1]) <= 50) { land = j; break; }
+  const tail = land >= 0 ? run.slice(land) : run.slice(run.length >> 1);
+  return { landed: land >= 0, ms: land >= 0 ? run[land][0] : null, settle: median(tail.map(r => r[1])),
+    startDir: median(run.slice(0, 3).map(r => r[1])) * dir };
+}
+// Every pitch change between connected notes, judged over all passes the mic heard.
+function transitions(notes, stats) {
+  const out = [];
+  for (let i = 1; i < notes.length; i++) {
+    const a = notes[i - 1], n = notes[i], iv = n.midi - a.midi;
+    if (!iv || n.t - (a.t + a.dur) > 0.6) continue;          // repeated note, or a rest/breath between
+    const runs = (stats.get(i)?.runs || []).filter(r => r.length >= 4);
+    if (!runs.length) continue;
+    const dir = Math.sign(iv), js = runs.map(r => judgeRun(r, dir));
+    out.push({ i, iv, dir, size: Math.abs(iv) <= 2 ? 'step' : Math.abs(iv) <= 4 ? 'skip' : 'leap', tries: js.length,
+      landed: js.filter(j => j.landed).length, ms: median(js.filter(j => j.landed).map(j => j.ms)),
+      settle: median(js.map(j => j.settle)), short: median(js.map(j => j.settle * dir)),
+      lateStart: js.filter(j => j.startDir < -50).length, overStart: js.filter(j => j.startDir > 50).length });
+  }
+  return out;
+}
+const offBy = c => Math.abs(c) < 10 ? 'on pitch' : `${Math.round(Math.abs(c))}¢ ${c < 0 ? 'flat' : 'sharp'}`;
+const landTime = ms => ms < 50 ? 'lands at once' : `${Math.round(ms)} ms to land`;
+const pct = (a, b) => Math.round(100 * a / b);
+function transitionReport(notes, stats) {
+  const ts = transitions(notes, stats), sum = (xs, f) => xs.reduce((t, x) => t + f(x), 0);
+  const tries = sum(ts, t => t.tries);
+  if (tries < 8) return { groups: [], worst: [], tips: ['Not enough singing heard yet. Turn on Mic, sing a verse (or loop a line a few times), then open Report again.'] };
+  const GROUPS = [['step', 1, 'Steps up (1–2 semitones)'], ['step', -1, 'Steps down'], ['skip', 1, 'Skips up (3rds)'], ['skip', -1, 'Skips down'],
+    ['leap', 1, 'Leaps up (4th or more)'], ['leap', -1, 'Leaps down']];
+  const groups = [];
+  for (const [size, dir, label] of GROUPS) {
+    const g = ts.filter(t => t.size === size && t.dir === dir); if (!g.length) continue;
+    const n = sum(g, t => t.tries), runs = g.flatMap(t => Array(t.tries).fill(t));
+    groups.push({ size, dir, label, tries: n, landed: sum(g, t => t.landed), ms: median(g.filter(t => t.ms != null).map(t => t.ms)),
+      settle: median(runs.map(t => t.settle)), short: median(runs.map(t => t.short)),
+      late: sum(g, t => t.lateStart), over: sum(g, t => t.overStart) });
+  }
+  const tips = [], rate = gs => { const n = sum(gs, g => g.tries); return n ? sum(gs, g => g.landed) / n : null; };
+  const steps = groups.filter(g => g.size === 'step'), leaps = groups.filter(g => g.size === 'leap');
+  const sr = rate(steps), lr = rate(leaps);
+  if (sr != null && lr != null && sum(leaps, g => g.tries) >= 3 && lr < sr - 0.2)
+    tips.push(`The big jumps are the problem: you land ${Math.round(100 * sr)}% of steps but only ${Math.round(100 * lr)}% of leaps. Before a leap, hear the target note in your head (or play it), then sing it. Loop that line slowly until it's clean, then speed up.`);
+  for (const g of groups) if (g.tries >= 3 && g.size !== 'step' && g.short <= -25)
+    tips.push(`${g.label}: you fall short. The note ends up ${offBy(g.settle)}, on the side you came from. Aim a little past it; it's usually reaching too little, not too far.`);
+  for (const g of groups) if (g.tries >= 3 && g.short >= 25)
+    tips.push(`${g.label}: you overshoot and stay ${offBy(g.settle)}. Lighten up on the way into the note.`);
+  const allMs = median(ts.filter(t => t.ms != null).map(t => t.ms)), late = sum(groups, g => g.late);
+  if (allMs != null && allMs > 250)
+    tips.push(`You arrive late: about ${Math.round(allMs)} ms to find each new note${late / tries >= 0.4 ? `, and ${pct(late, tries)}% of the time you're still on the old pitch when the new note starts` : ''}. That's usually reacting to the guide or the screen. Know the next note before it comes and move to it on the beat, not after.`);
+  else if (late / tries >= 0.4)
+    tips.push(`${pct(late, tries)}% of the time you start a new note on the old pitch and slide into it. Move cleanly on the beat; practise the line slowly, a note per beat.`);
+  const over = sum(groups, g => g.over);
+  if (over / tries >= 0.3) tips.push(`${pct(over, tries)}% of new notes start past the target and come back. Aim to arrive, not to overshoot.`);
+  const all = median(ts.flatMap(t => Array(t.tries).fill(t.settle)));
+  if (Math.abs(all) >= 25 && !tips.length)
+    tips.push(`You're ${offBy(all)} across the board, not just on jumps. That's tuning in general rather than transitions: turn the guide piano up and match it on long notes first.`);
+  if (!tips.length) tips.push(`Your transitions look solid: you land ${pct(sum(ts, t => t.landed), tries)}% of note changes${allMs != null ? `, in about ${Math.round(allMs)} ms` : ''}. If a spot still feels hard, loop it at a slower tempo.`);
+  const worst = ts.filter(t => t.landed < t.tries || (t.ms ?? 0) > 300)
+    .sort((x, y) => x.landed / x.tries - y.landed / y.tries || (y.ms ?? 1e9) - (x.ms ?? 1e9)).slice(0, 5);
+  return { groups, worst, tips, tries };
+}
+function showReport() {
+  pause();
+  const rep = transitionReport(S.song.notes, S.stats);
+  const nm = m => spell(m + S.shift, S.key).label, li = (ul, t) => { const e = document.createElement('li'); e.textContent = t; ul.append(e); return e; };
+  $('rText').textContent = rep.tries ? `${rep.tries} note changes heard since you opened this song or pressed ⏮.` : '';
+  const g = $('rGroups'); g.innerHTML = '';
+  for (const x of rep.groups) li(g, `${x.label}: landed ${x.landed} of ${x.tries}${x.ms != null ? ` · ${landTime(x.ms)}` : ''} · settles ${offBy(x.settle)}`);
+  const w = $('rWorst'); w.innerHTML = ''; $('rWorstH').hidden = !rep.worst.length;
+  for (const t of rep.worst) {
+    const a = S.song.notes[t.i - 1], n = S.song.notes[t.i];
+    const e = li(w, `“${n.lyric || '…'}” (bar ${n.bar}) ${nm(a.midi)}→${nm(n.midi)}, ${t.dir > 0 ? 'up' : 'down'} a ${intervalName(Math.abs(t.iv))}: landed ${t.landed} of ${t.tries}${t.ms != null ? `, ${landTime(t.ms)}` : ''}, settles ${offBy(t.settle)} `);
+    const b = document.createElement('button'); b.className = 'small'; b.textContent = 'Practise';
+    b.onclick = () => { loopLine(S.lines[S.lineOf[t.i]]); hideReport(); };
+    e.append(b);
+  }
+  const tp = $('rTips'); tp.innerHTML = ''; rep.tips.forEach(t => li(tp, t));
+  $('report').hidden = false;
+}
+const hideReport = () => { $('report').hidden = true; };
+function loopLine(L, jump = true) {
+  if (!L) return;
+  const a = barAt(L.start).t, endBar = barAt(Math.max(L.start, L.end - 0.01));
+  S.loop = { a, b: endBar.t + endBar.beats };
+  $('loopBtn').setAttribute('aria-pressed', 'true');
+  if (!T.playing) T.beat = a; else if (jump) seek(a, false);
 }
 
 /* --------------------------------------------------------------- drawing */
@@ -881,10 +983,7 @@ function setup() {
   $('loopBtn').onclick = () => {
     if (S.loop) { S.loop = null; $('loopBtn').setAttribute('aria-pressed', 'false'); return; }
     const L = S.lines[lineIndexAt(nowBeat())]; if (!L) return;
-    const a = barAt(L.start).t, endBar = barAt(Math.max(L.start, L.end - 0.01));
-    S.loop = { a, b: endBar.t + endBar.beats };
-    $('loopBtn').setAttribute('aria-pressed', 'true');
-    if (!T.playing) T.beat = a;
+    loopLine(L, false);                // keep playing from where we are
   };
   $('micBtn').onclick = async () => {
     if (micStream) { micOff(); $('micBtn').setAttribute('aria-pressed', 'false'); return; }
@@ -923,6 +1022,8 @@ function setup() {
   $('measureBtn2').onclick = startMeasure;
   $('mNext').onclick = nextMeasure;
   $('mCancel').onclick = endMeasure;
+  $('reportBtn').onclick = showReport;
+  $('rClose').onclick = hideReport;
   bindToggle('clickBtn', 'click'); bindToggle('countBtn', 'countIn'); bindToggle('octBtn', 'anyOct');
 
   // tap to jump, drag to scrub

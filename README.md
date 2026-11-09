@@ -36,6 +36,10 @@ with the bundled public-domain songs. Open it on your phone and tap **Install**
   note turns green, amber or red depending on how close you held it, and you get
   a score at the end. **Any octave** scores a note sung an octave away as
   correct, so a low voice can practise a high song.
+- **Note-change report.** **Report** shows how you handle the jumps between
+  notes: whether you land them, how fast, and whether you fall short, overshoot
+  or slide in late. It lists your hardest spots, each with a **Practise** button
+  that loops its line.
 - **Key shift and your range.** Shift the song up or down by semitones. Songline
   shows the song's new lowest and highest notes and whether they fit your
   range, and **Fit** picks the best shift for you. Set your range from a voice
@@ -72,6 +76,7 @@ If you have `make`, the same commands are available as `make run` and `make test
 | **Staff / Piano roll** | Switch views. |
 | **Tempo** | Slow down or speed up. This is remembered per song. |
 | **Key shift**, **Fit**, **Measure** | Move the song into your range, or measure your range with the mic. The line under the slider shows the song's range and whether it fits yours. |
+| **Report** | After singing with **Mic** on: how you land your note changes, your hardest spots, and what to work on. See [Note-change report](#note-change-report). |
 | **More → Guide piano, Chords** | Volumes. Set the guide piano to *off* once you know the tune. |
 | **More → My range** | A voice type (Bass … Soprano), your lowest and highest notes, or **Measure** to find them with the mic. Notes outside your range are shaded red on the piano roll. |
 | **More → Click, Count-in, Any octave** | Metronome; count-in before playing; octave-free scoring. |
@@ -94,6 +99,24 @@ range is, the voice type it is closest to, and, for each song on the device,
 whether it fits as written, which **Key shift** makes it fit, or how far
 outside your range it still goes. A range isn't good or bad on its own; what
 matters is which songs it suits and in what key.
+
+### Note-change report
+
+With **Mic** on, Songline listens to how each new note starts and where it
+settles. **Report** pauses playback and sums this up for everything you've sung
+since opening the song or pressing **⏮** (looped lines count every pass):
+
+- **By kind of jump.** Steps (1–2 semitones), skips (3rds) and leaps (a 4th or
+  more), up and down: how many you landed within ±50 cents, how long landing
+  took, and where the note settled.
+- **Hardest spots.** The note changes you missed most, with the word, bar and
+  notes. **Practise** loops that line.
+- **What it suggests.** For example: leaps much worse than steps, falling short
+  of jumps, arriving late on the old pitch and sliding over, overshooting, or
+  being off in general rather than on jumps.
+
+It needs a few lines of singing to say anything. Timings include a little
+microphone delay, so treat anything under about 150 ms as on time.
 
 ## Use it on your phone
 

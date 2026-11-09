@@ -112,6 +112,73 @@ class Browser(unittest.TestCase):
         self.assertTrue(page.is_hidden("#mCoach"))
         self.assertFalse(page.evaluate("!!micStream"), "mic left on after measuring")
 
+    # A simulated singer: for every pass through every note, readings every 33 ms of how many
+    # cents off they are, from a model of (interval into the note, ms since the note started).
+    SIMULATE = """model => {
+        S.stats = new Map();
+        const ns = S.song.notes;
+        for (let i = 1; i < ns.length; i++) {
+            const iv = ns[i].midi - ns[i - 1].midi, len = ns[i].dur * 60000 / bpm(), runs = [];
+            for (let pass = 0; pass < 3; pass++) {
+                const run = [];
+                for (let ms = 0; ms < len; ms += 33) run.push([ms, Math.round(model(iv, ms))]);
+                runs.push(run);
+            }
+            S.stats.set(i, { f: 9, h: 9, runs });
+        }
+    }"""
+
+    def report(self, page, model):
+        page.evaluate(f"({self.SIMULATE})({model})")
+        return page.evaluate("transitionReport(S.song.notes, S.stats)")
+
+    def test_report_finds_short_leaps(self):
+        page = self.open()
+        # Steps land at once; leaps of a 4th or more stay 70 cents short of the target.
+        rep = self.report(page, "(iv, ms) => Math.abs(iv) >= 5 ? -70 * Math.sign(iv) : 5")
+        tips = " ".join(rep["tips"])
+        self.assertIn("big jumps are the problem", tips)
+        self.assertIn("Leaps up (4th or more): you fall short", tips)
+        self.assertNotIn("arrive late", tips)
+        self.assertTrue(rep["worst"], "no hardest spots listed")
+        self.assertTrue(all(abs(t["iv"]) >= 5 for t in rep["worst"]))
+
+    def test_report_finds_late_arrival(self):
+        page = self.open()
+        # Every new note starts on the old pitch and only moves over after 400 ms.
+        rep = self.report(page, "(iv, ms) => ms < 400 ? -100 * iv : 0")
+        tips = " ".join(rep["tips"])
+        self.assertIn("You arrive late", tips)
+        self.assertIn("still on the old pitch", tips)
+        self.assertNotIn("big jumps", tips)
+
+    def test_report_clean_singer_and_sheet(self):
+        page = self.open(viewport={"width": 412, "height": 860}, is_mobile=True, has_touch=True)
+        page.click("#reportBtn")
+        self.assertIn("Not enough singing", page.inner_text("#rTips"))
+        page.click("#rClose")
+        self.assertTrue(page.is_hidden("#report"))
+        self.report(page, "(iv, ms) => ms < 66 ? 30 : 0")
+        page.click("#reportBtn")
+        self.assertIn("transitions look solid", page.inner_text("#rTips"))
+        self.assertIn("Leaps up (4th or more): landed 12 of 12", page.inner_text("#rGroups"))
+        # A spot that fails: the first leap up, never landed. Practise loops its line.
+        page.evaluate("""() => { const ns = S.song.notes; const i = ns.findIndex((n, k) => k && n.midi - ns[k - 1].midi >= 5);
+            S.stats.get(i).runs = S.stats.get(i).runs.map(r => r.map(([ms]) => [ms, -80])); window._i = i; }""")
+        page.click("#rClose")
+        page.click("#reportBtn")
+        page.click("#rWorst li:first-child button")
+        self.assertTrue(page.is_hidden("#report"))
+        self.assertTrue(page.evaluate("(() => { const L = S.lines[S.lineOf[_i]]; return S.loop && S.loop.a <= L.start && S.loop.b >= L.end; })()"))
+
+    def test_mic_records_note_passes(self):
+        page = self.open()
+        page.click("#micBtn")
+        page.wait_for_function("() => !!micStream", timeout=10000)
+        page.click("#play")
+        page.wait_for_function("() => [...S.stats.values()].some(st => st.runs.length && st.runs[0].length >= 4)", timeout=20000)
+        page.click("#play")
+
 
 if __name__ == "__main__":
     unittest.main()
